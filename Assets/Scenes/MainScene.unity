@@ -131,10 +131,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1667381450228362884, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
       propertyPath: inAirMoveDamp
       value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
+      propertyPath: upTurnMaxAngle
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}

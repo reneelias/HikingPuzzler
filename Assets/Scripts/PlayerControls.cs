@@ -40,6 +40,7 @@ public class PlayerControls : MonoBehaviour
     private Vector3 movementVector = new Vector3();
     private Vector3 originalPosition;
     private Vector3 forwardMovementDirection = Vector3.forward;
+    private float cameraUpAngle = 0f;
     
     // Start is called before the first frame update
     void Start()
@@ -164,11 +165,10 @@ public class PlayerControls : MonoBehaviour
                 forwardMovementDirection += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
             }
             if(axisMouseY != 0){
-                float cameraUpAngle = cameraParent.transform.eulerAngles.x;
-                cameraUpAngle += axisMouseY * mouseTurnSpeed * Time.deltaTime;
-                print($"cameraUpAngle: {cameraUpAngle}");
+                cameraUpAngle -= axisMouseY * mouseTurnSpeed * Time.deltaTime;
                 cameraUpAngle = Mathf.Clamp(cameraUpAngle, -upTurnMaxAngle, upTurnMaxAngle);
                 cameraParent.transform.localEulerAngles = new Vector3(cameraUpAngle, 0f, 0f);
+                // cameraParent.transform.rotation = Quaternion.RotateTowards(cameraParent.transform.rotation, Quaternion.Euler(cameraUpAngle, 0f, 0f), 10f);
             }
 
         } else {
