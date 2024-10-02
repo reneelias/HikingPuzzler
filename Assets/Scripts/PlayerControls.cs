@@ -34,6 +34,8 @@ public class PlayerControls : MonoBehaviour
     [Header("Turning")]
     [SerializeField] private float turningSpeed = 1f;
     [SerializeField] private float mouseTurnSpeed = 5f;
+    [SerializeField] private GameObject cameraParent; 
+    [SerializeField] private float upTurnMaxAngle = 45f;
     private float upVelocity = 0f;
     private Vector3 movementVector = new Vector3();
     private Vector3 originalPosition;
@@ -155,9 +157,20 @@ public class PlayerControls : MonoBehaviour
 
     void TurningControls(){
         float axisMouseX = Input.GetAxis("Mouse X");
+        float axisMouseY = Input.GetAxis("Mouse Y");
         if(axisMouseX != 0 && Input.GetMouseButton(1)){
-            transform.eulerAngles += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
-            forwardMovementDirection += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
+            if(axisMouseX != 0){
+                transform.eulerAngles += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
+                forwardMovementDirection += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
+            }
+            if(axisMouseY != 0){
+                float cameraUpAngle = cameraParent.transform.eulerAngles.x;
+                cameraUpAngle += axisMouseY * mouseTurnSpeed * Time.deltaTime;
+                print($"cameraUpAngle: {cameraUpAngle}");
+                cameraUpAngle = Mathf.Clamp(cameraUpAngle, -upTurnMaxAngle, upTurnMaxAngle);
+                cameraParent.transform.localEulerAngles = new Vector3(cameraUpAngle, 0f, 0f);
+            }
+
         } else {
             if(Input.GetKey(KeyCode.LeftArrow)){
                 transform.eulerAngles += new Vector3(0, -turningSpeed * Time.deltaTime, 0f);

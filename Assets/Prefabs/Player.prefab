@@ -189,6 +189,7 @@ MonoBehaviour:
   rayCastDistance: 0.25
   turningSpeed: 80
   mouseTurnSpeed: 400
+  cameraParent: {fileID: 2311422004914379572}
 --- !u!33 &7134430295402482643
 MeshFilter:
   m_ObjectHideFlags: 0
