@@ -66,9 +66,9 @@ public class PlayerControls : MonoBehaviour
         movementVector = new Vector3();
 
         float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
+        float moveZ = Input.GetAxis("Vertical");
 
-        movementVector = transform.right * moveX + transform.forward * moveY;
+        movementVector = transform.right * moveX + transform.forward * moveZ;
 
         if(movementVector.magnitude == 0f){
             if(moveVelocity.magnitude > 0f){
