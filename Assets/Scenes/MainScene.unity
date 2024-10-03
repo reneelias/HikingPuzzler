@@ -153,6 +153,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
+      propertyPath: moveVelDampRate
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
       propertyPath: moveVelMaxSpeed
       value: 0.15
       objectReference: {fileID: 0}

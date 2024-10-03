@@ -39,7 +39,6 @@ public class PlayerControls : MonoBehaviour
     private float upVelocity = 0f;
     private Vector3 movementVector = new Vector3();
     private Vector3 originalPosition;
-    private Vector3 forwardMovementDirection = Vector3.forward;
     private float cameraUpAngle = 0f;
     
     // Start is called before the first frame update
@@ -65,19 +64,11 @@ public class PlayerControls : MonoBehaviour
 
     void MovementControls(){
         movementVector = new Vector3();
-        
-        if(Input.GetKey(KeyCode.W)){
-            movementVector += Vector3.forward;
-        } 
-        if(Input.GetKey(KeyCode.S)){
-            movementVector += Vector3.back;
-        }
-        if(Input.GetKey(KeyCode.A)){
-            movementVector += Vector3.left;
-        } 
-        if(Input.GetKey(KeyCode.D)){
-            movementVector += Vector3.right;
-        }
+
+        float moveX = Input.GetAxis("Horizontal");
+        float moveY = Input.GetAxis("Vertical");
+
+        movementVector = transform.right * moveX + transform.forward * moveY;
 
         if(movementVector.magnitude == 0f){
             if(moveVelocity.magnitude > 0f){
@@ -86,7 +77,6 @@ public class PlayerControls : MonoBehaviour
             
         } else {
             movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp);
-            movementVector = Quaternion.Euler(0f, forwardMovementDirection.y, 0f) * movementVector;
             moveVelocity += movementVector;
             if(moveVelocity.magnitude > moveVelMaxSpeed){
                 moveVelocity = moveVelocity.normalized * moveVelMaxSpeed;
@@ -153,7 +143,6 @@ public class PlayerControls : MonoBehaviour
                 characterController.enabled = true;
             }
             transform.eulerAngles = Vector3.zero;
-            forwardMovementDirection = Vector3.forward;
         }
     }
 
@@ -163,24 +152,11 @@ public class PlayerControls : MonoBehaviour
 
         if(axisMouseX != 0){
             transform.eulerAngles += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
-            forwardMovementDirection += new Vector3(0, axisMouseX * mouseTurnSpeed * Time.deltaTime, 0f);
         }
         if(axisMouseY != 0){
             cameraUpAngle -= axisMouseY * mouseTurnSpeed * Time.deltaTime;
             cameraUpAngle = Mathf.Clamp(cameraUpAngle, -upTurnMaxAngle, upTurnMaxAngle);
             cameraParent.transform.localEulerAngles = new Vector3(cameraUpAngle, 0f, 0f);
-            // cameraParent.transform.localRotation = Quaternion.Euler(new Vector3(cameraUpAngle, 0f, 0f));
-        }
-
-        if(Input.GetKey(KeyCode.LeftArrow)){
-            transform.eulerAngles += new Vector3(0, -turningSpeed * Time.deltaTime, 0f);
-            forwardMovementDirection += new Vector3(0, -turningSpeed * Time.deltaTime, 0f);
-            // print(transform.rotation);
-        }
-        if(Input.GetKey(KeyCode.RightArrow)){
-            transform.eulerAngles += new Vector3(0, turningSpeed * Time.deltaTime, 0f);
-            forwardMovementDirection += new Vector3(0, turningSpeed * Time.deltaTime, 0f);
-            // print(transform.rotation);
         }
     }
 
