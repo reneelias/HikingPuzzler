@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 410087040}
   m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -143,13 +143,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
+      propertyPath: movementSpeed
+      value: 0.0125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
       propertyPath: upTurnMaxAngle
       value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
       propertyPath: moveVelMaxSpeed
-      value: 0.25
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 3853593180974075733, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
