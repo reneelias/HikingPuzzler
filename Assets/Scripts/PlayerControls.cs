@@ -97,7 +97,8 @@ public class PlayerControls : MonoBehaviour
         foreach(Transform transform in raycastPointsParent.transform){
             if(Physics.Raycast(new Ray(transform.position, gravity.normalized), rayCastDistance)){
                 if(!grounded){
-                    upVector = Vector3.zero;
+                    // upVector = Vector3.zero;
+                    upVector = gravity * .25f;
                 }
                 grounded = true;
                 break;
