@@ -19,6 +19,9 @@
 # Terrain Assets
 /[Aa]ssets/TerrainSampleAssets
 
+# URP Terrain Demo Scene
+/[Aa]ssets/TerrainDemoScene_URP
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
