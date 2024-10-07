@@ -16,6 +16,7 @@ public class PlayerControls : MonoBehaviour
     [SerializeField] private float inAirMoveDamp = .5f;
     [Tooltip("That maximum speed that the player can move it using directional input.")]
     [SerializeField] private float moveVelMaxSpeed = 1f;
+    [SerializeField] private float sprintSpeedMultiplier = 2f;
     [Tooltip("Scale by which velocity will be multiplied each update when no movement input detected.")]
     [SerializeField] private float moveVelDampRate = .1f;
     private Vector3 moveVelocity = Vector3.zero;
@@ -78,8 +79,11 @@ public class PlayerControls : MonoBehaviour
         } else {
             movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp);
             moveVelocity += movementVector;
-            if(moveVelocity.magnitude > moveVelMaxSpeed){
-                moveVelocity = moveVelocity.normalized * moveVelMaxSpeed;
+            bool sprinting = Input.GetKey(KeyCode.LeftShift);
+            float maxSpeed = moveVelMaxSpeed;
+            maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
+            if(moveVelocity.magnitude > maxSpeed){
+                moveVelocity = moveVelocity.normalized * maxSpeed;
             }
         }
 
