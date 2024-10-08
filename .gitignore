@@ -22,6 +22,12 @@
 # URP Terrain Demo Scene
 /[Aa]ssets/TerrainDemoScene_URP
 
+# URP Terrain Demo Scene
+/[Aa]ssets/TerrainDemoScene_URP
+
+# Real Stars Skybox
+/[Aa]ssets/Real*Stars*Skybox/
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
