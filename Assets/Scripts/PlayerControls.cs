@@ -19,7 +19,11 @@ public class PlayerControls : MonoBehaviour
     [SerializeField] private float sprintSpeedMultiplier = 2f;
     [Tooltip("Scale by which velocity will be multiplied each update when no movement input detected.")]
     [SerializeField] private float moveVelDampRate = .1f;
+    [SerializeField] private float slopeLimit = 80f;
+    [SerializeField] private float slideFriction = .3f;
     private Vector3 moveVelocity = Vector3.zero;
+    private Vector3 hitNormal = Vector3.up;
+
 
     [Header("Gravity")]
     [SerializeField] private float gravityScale = -9.81f;
@@ -92,7 +96,16 @@ public class PlayerControls : MonoBehaviour
             rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
             rigidbody.angularVelocity = Vector3.zero;
         } else {
+            print("Angle to ground normal: " + Vector3.Angle(Vector3.up, hitNormal));
+            if(grounded && Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit && movementVector.magnitude > 0f){
+                moveVelocity.x += (1f - hitNormal.y) * hitNormal.x * (1f - slideFriction);
+                moveVelocity.z += (1f - hitNormal.y) * hitNormal.z * (1f - slideFriction);
+            }
             characterController.Move(moveVelocity);
+            // grounded = Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit;
+            // if(!isGrounded){
+
+            // }
         }
     }
 
@@ -165,5 +178,14 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// OnControllerColliderHit is called when the controller hits a
+    /// collider while performing a Move.
+    /// </summary>
+    /// <param name="hit">The ControllerColliderHit data associated with this collision.</param>
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        hitNormal = hit.normal;
+    }
 
 }
