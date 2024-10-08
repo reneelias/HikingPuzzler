@@ -907,7 +907,7 @@ PrefabInstance:
     - target: {fileID: 5230201651827792032, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
       propertyPath: m_SlopeLimit
-      value: 70
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 8449218137469966550, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
