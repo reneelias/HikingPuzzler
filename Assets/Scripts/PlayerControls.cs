@@ -22,8 +22,6 @@ public class PlayerControls : MonoBehaviour
     [SerializeField] private float slopeLimit = 80f;
     [SerializeField] private float slideFriction = .3f;
     private Vector3 moveVelocity = Vector3.zero;
-    private Vector3 hitNormal = Vector3.up;
-
 
     [Header("Gravity")]
     [SerializeField] private float gravityScale = -9.81f;
@@ -88,27 +86,31 @@ public class PlayerControls : MonoBehaviour
 
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
-
         movementVector = transform.right * moveX + transform.forward * moveZ;
+        Vector3 xzMoveVel = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
         if(movementVector.magnitude == 0f){
-            if(moveVelocity.magnitude > 0f){
-                moveVelocity *= moveVelDampRate;
+            if(xzMoveVel.magnitude > 0f){
+                xzMoveVel *= moveVelDampRate * Time.deltaTime;
             }
             
         } else {
             movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp * Time.deltaTime);
-            moveVelocity += movementVector;
+            movementVector = AdjustVelocityToSlope(movementVector);
+           
+            xzMoveVel += movementVector;
             bool sprinting = Input.GetKey(KeyCode.LeftShift);
             float maxSpeed = moveVelMaxSpeed;
             maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
-            if(moveVelocity.magnitude > maxSpeed){
-                moveVelocity = moveVelocity.normalized * maxSpeed;
+
+            if(xzMoveVel.magnitude > maxSpeed){
+                xzMoveVel = xzMoveVel.normalized * maxSpeed;
             }
         }
 
         if(grounded){
             if(Input.GetKeyDown(KeyCode.Space)){
                 upVector = new Vector3(-gravity.x, -gravity.y, -gravity.z).normalized * jumpSpeed;
+                moveVelocity.y = 0;
                 if(usesRigidbody){
                     rigidbody.velocity += upVector;
                 }
@@ -118,18 +120,22 @@ public class PlayerControls : MonoBehaviour
                 rigidbody.velocity += gravity * Time.deltaTime;
                 print(rigidbody.velocity);
             } else {
-                upVector += gravity * gravityScale * Time.deltaTime;
+                upVector = gravity * gravityScale * Time.deltaTime;
             }
         }
-        moveVelocity += upVector;
+
+        xzMoveVel.y = moveVelocity.y + upVector.y;
+        moveVelocity = xzMoveVel;
 
         if(usesRigidbody){
             rigidbody.velocity += movementVector;
             rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
             rigidbody.angularVelocity = Vector3.zero;
         } else {
-            moveVelocity = AdjustVelocityToSlope(moveVelocity);
             characterController.Move(moveVelocity);
+            if(!grounded){
+                print(moveVelocity);
+            }
         }
     }
     void ResetPosition(){
@@ -161,15 +167,6 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// OnControllerColliderHit is called when the controller hits a
-    /// collider while performing a Move.
-    /// </summary>
-    /// <param name="hit">The ControllerColliderHit data associated with this collision.</param>
-    void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        hitNormal = hit.normal;
-    }
 
     private Vector3 AdjustVelocityToSlope(Vector3 velocity)
     {
