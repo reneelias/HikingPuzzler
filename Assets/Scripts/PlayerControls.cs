@@ -57,65 +57,23 @@ public class PlayerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        JumpingControls();
+        MovementControls();
         ResetPosition();
         TurningControls();
     }
 
     void FixedUpdate()
     {
-        MovementControls();
     }
 
     void MovementControls(){
-        movementVector = new Vector3();
-
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        movementVector = transform.right * moveX + transform.forward * moveZ;
-
-        if(movementVector.magnitude == 0f){
-            if(moveVelocity.magnitude > 0f){
-                moveVelocity *= moveVelDampRate;
-            }
-            
-        } else {
-            movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp);
-            moveVelocity += movementVector;
-            bool sprinting = Input.GetKey(KeyCode.LeftShift);
-            float maxSpeed = moveVelMaxSpeed;
-            maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
-            if(moveVelocity.magnitude > maxSpeed){
-                moveVelocity = moveVelocity.normalized * maxSpeed;
-            }
-        }
-
-        if(usesRigidbody){
-            rigidbody.velocity += movementVector;
-            rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
-            rigidbody.angularVelocity = Vector3.zero;
-        } else {
-            print("Angle to ground normal: " + Vector3.Angle(Vector3.up, hitNormal));
-            if(grounded && Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit && movementVector.magnitude > 0f){
-                moveVelocity.x += (1f - hitNormal.y) * hitNormal.x * (1f - slideFriction);
-                moveVelocity.z += (1f - hitNormal.y) * hitNormal.z * (1f - slideFriction);
-            }
-            characterController.Move(moveVelocity);
-            // grounded = Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit;
-            // if(!isGrounded){
-
-            // }
-        }
-    }
-
-    void JumpingControls(){
         int i = 0;
         foreach(Transform transform in raycastPointsParent.transform){
-            if(Physics.Raycast(new Ray(transform.position, gravity.normalized), rayCastDistance)){
+            RaycastHit raycastHit;
+            if(Physics.Raycast(new Ray(transform.position, gravity.normalized), out raycastHit, rayCastDistance) && raycastHit.collider.name != "Player"){
                 if(!grounded){
                     // upVector = Vector3.zero;
-                    upVector = gravity * .25f;
+                    upVector = gravity * .0125f;
                 }
                 grounded = true;
                 break;
@@ -124,6 +82,28 @@ public class PlayerControls : MonoBehaviour
         }
         if(i == raycastPointsParent.transform.childCount){
             grounded = false;
+        }
+
+        movementVector = new Vector3();
+
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        movementVector = transform.right * moveX + transform.forward * moveZ;
+        if(movementVector.magnitude == 0f){
+            if(moveVelocity.magnitude > 0f){
+                moveVelocity *= moveVelDampRate;
+            }
+            
+        } else {
+            movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp * Time.deltaTime);
+            moveVelocity += movementVector;
+            bool sprinting = Input.GetKey(KeyCode.LeftShift);
+            float maxSpeed = moveVelMaxSpeed;
+            maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
+            if(moveVelocity.magnitude > maxSpeed){
+                moveVelocity = moveVelocity.normalized * maxSpeed;
+            }
         }
 
         if(grounded){
@@ -141,14 +121,17 @@ public class PlayerControls : MonoBehaviour
                 upVector += gravity * gravityScale * Time.deltaTime;
             }
         }
-        
+        moveVelocity += upVector;
+
         if(usesRigidbody){
-            // rigidbody.velocity = moveVelocity;
+            rigidbody.velocity += movementVector;
+            rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
+            rigidbody.angularVelocity = Vector3.zero;
         } else {
-            characterController.Move(upVector * Time.deltaTime);
+            moveVelocity = AdjustVelocityToSlope(moveVelocity);
+            characterController.Move(moveVelocity);
         }
     }
-
     void ResetPosition(){
         if(Input.GetKeyDown(KeyCode.R)){
             if(usesRigidbody){
@@ -186,6 +169,24 @@ public class PlayerControls : MonoBehaviour
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         hitNormal = hit.normal;
+    }
+
+    private Vector3 AdjustVelocityToSlope(Vector3 velocity)
+    {
+        var ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 0.2f))
+        {
+            var slopeRotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+            var adjustedVelocity = slopeRotation * velocity;
+
+            if (adjustedVelocity.y < 0)
+            {
+                return adjustedVelocity;
+            }
+        }
+
+        return velocity;
     }
 
 }
