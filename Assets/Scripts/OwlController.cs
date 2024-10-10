@@ -6,6 +6,15 @@ public class OwlController : MonoBehaviour
 {
     Animator animator;
     [SerializeField] private OwlAnimState animState = OwlAnimState.IdleLookAroundGrounded;
+
+    public enum OwlState{
+        Idle,
+        TakingOff,
+        Flying,
+        Landing
+    }
+
+    public OwlState owlState { get; private set; } = OwlState.Idle;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,14 +25,25 @@ public class OwlController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        switch (owlState){
+            case OwlState.Idle:
+                break;
+            case OwlState.TakingOff:
+                break;
+            case OwlState.Flying:
+                break;
+            case OwlState.Landing:
+                break;
+        }
     }
 
     public void SetAnimState(OwlAnimState animState){
         this.animState = animState;
         animator.SetTrigger(animState.ToString());
     }
+
 }
+
 public enum OwlAnimState{
     Falling,
     Fly,
