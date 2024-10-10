@@ -11,7 +11,8 @@
 /[Uu]ser[Ss]ettings/
 
 # Animal Assets
-/[Aa]ssets/Animals*Full*Pack
+/[Aa]ssets/Animals*Full*Pack/**/Textures
+/[Aa]ssets/Animals*Full*Pack/**/FBX*Files
 
 # Nature Assets
 /[Aa]ssets/NatureManufacture*Assets
