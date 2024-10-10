@@ -5,22 +5,7 @@ using UnityEngine;
 public class OwlController : MonoBehaviour
 {
     Animator animator;
-    public AnimState animState = AnimState.IdleLookAroundGrounded;
-    public enum AnimState{
-        Falling,
-        Fly,
-        Glide,
-        IdleLookAroundGrounded,
-        IdleLookAroundBranch,
-        IdleStareBranch,
-        IdleStareGrounded,
-        LandingBranch,
-        LandingGrounded,
-        TakeOffBranch,
-        TakeOffGrounded,
-        Walk,
-        Walk_RM
-    }
+    [SerializeField] private OwlAnimState animState = OwlAnimState.IdleLookAroundGrounded;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,4 +18,24 @@ public class OwlController : MonoBehaviour
     {
         
     }
+
+    public void SetAnimState(OwlAnimState animState){
+        this.animState = animState;
+        animator.SetTrigger(animState.ToString());
+    }
+}
+public enum OwlAnimState{
+    Falling,
+    Fly,
+    Glide,
+    IdleLookAroundGrounded,
+    IdleLookAroundBranch,
+    IdleStareBranch,
+    IdleStareGrounded,
+    LandingBranch,
+    LandingGrounded,
+    TakeOffBranch,
+    TakeOffGrounded,
+    Walk,
+    Walk_RM
 }
