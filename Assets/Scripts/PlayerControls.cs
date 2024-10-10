@@ -70,7 +70,6 @@ public class PlayerControls : MonoBehaviour
             RaycastHit raycastHit;
             if(Physics.Raycast(new Ray(transform.position, gravity.normalized), out raycastHit, rayCastDistance) && raycastHit.collider.name != "Player"){
                 if(!grounded){
-                    // upVector = Vector3.zero;
                     upVector = gravity * .0125f;
                 }
                 grounded = true;
@@ -107,7 +106,7 @@ public class PlayerControls : MonoBehaviour
             }
         }
 
-        if(grounded){
+        if(grounded && upVector.y < 0){
             if(Input.GetKeyDown(KeyCode.Space)){
                 upVector = new Vector3(-gravity.x, -gravity.y, -gravity.z).normalized * jumpSpeed;
                 moveVelocity.y = 0;
@@ -133,9 +132,6 @@ public class PlayerControls : MonoBehaviour
             rigidbody.angularVelocity = Vector3.zero;
         } else {
             characterController.Move(moveVelocity);
-            if(!grounded){
-                print(moveVelocity);
-            }
         }
     }
     void ResetPosition(){
