@@ -871,6 +871,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
         type: 3}
+      propertyPath: jumpSpeed
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
+      propertyPath: gravityScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3531255732513161843, guid: c11ff60ca37e2ea448282d308c757f88,
+        type: 3}
       propertyPath: inAirMoveDamp
       value: 0.25
       objectReference: {fileID: 0}

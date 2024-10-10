@@ -19,6 +19,8 @@ public class PlayerControls : MonoBehaviour
     [SerializeField] private float sprintSpeedMultiplier = 2f;
     [Tooltip("Scale by which velocity will be multiplied each update when no movement input detected.")]
     [SerializeField] private float moveVelDampRate = .1f;
+    [SerializeField] private float slopeLimit = 80f;
+    [SerializeField] private float slideFriction = .3f;
     private Vector3 moveVelocity = Vector3.zero;
 
     [Header("Gravity")]
@@ -53,56 +55,22 @@ public class PlayerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        JumpingControls();
+        MovementControls();
         ResetPosition();
         TurningControls();
     }
 
     void FixedUpdate()
     {
-        MovementControls();
     }
 
     void MovementControls(){
-        movementVector = new Vector3();
-
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        movementVector = transform.right * moveX + transform.forward * moveZ;
-
-        if(movementVector.magnitude == 0f){
-            if(moveVelocity.magnitude > 0f){
-                moveVelocity *= moveVelDampRate;
-            }
-            
-        } else {
-            movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp);
-            moveVelocity += movementVector;
-            bool sprinting = Input.GetKey(KeyCode.LeftShift);
-            float maxSpeed = moveVelMaxSpeed;
-            maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
-            if(moveVelocity.magnitude > maxSpeed){
-                moveVelocity = moveVelocity.normalized * maxSpeed;
-            }
-        }
-
-        if(usesRigidbody){
-            rigidbody.velocity += movementVector;
-            rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
-            rigidbody.angularVelocity = Vector3.zero;
-        } else {
-            characterController.Move(moveVelocity);
-        }
-    }
-
-    void JumpingControls(){
         int i = 0;
         foreach(Transform transform in raycastPointsParent.transform){
-            if(Physics.Raycast(new Ray(transform.position, gravity.normalized), rayCastDistance)){
+            RaycastHit raycastHit;
+            if(Physics.Raycast(new Ray(transform.position, gravity.normalized), out raycastHit, rayCastDistance) && raycastHit.collider.name != "Player"){
                 if(!grounded){
-                    // upVector = Vector3.zero;
-                    upVector = gravity * .25f;
+                    upVector = gravity * .0125f;
                 }
                 grounded = true;
                 break;
@@ -113,9 +81,35 @@ public class PlayerControls : MonoBehaviour
             grounded = false;
         }
 
-        if(grounded){
+        movementVector = new Vector3();
+
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+        movementVector = transform.right * moveX + transform.forward * moveZ;
+        Vector3 xzMoveVel = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
+        if(movementVector.magnitude == 0f){
+            if(xzMoveVel.magnitude > 0f){
+                xzMoveVel *= moveVelDampRate * Time.deltaTime;
+            }
+            
+        } else {
+            movementVector = movementVector.normalized * movementSpeed * (grounded ? 1f : inAirMoveDamp * Time.deltaTime);
+            movementVector = AdjustVelocityToSlope(movementVector);
+           
+            xzMoveVel += movementVector;
+            bool sprinting = Input.GetKey(KeyCode.LeftShift);
+            float maxSpeed = moveVelMaxSpeed;
+            maxSpeed *= sprinting ? sprintSpeedMultiplier : 1f;
+
+            if(xzMoveVel.magnitude > maxSpeed){
+                xzMoveVel = xzMoveVel.normalized * maxSpeed;
+            }
+        }
+
+        if(grounded && upVector.y < 0){
             if(Input.GetKeyDown(KeyCode.Space)){
                 upVector = new Vector3(-gravity.x, -gravity.y, -gravity.z).normalized * jumpSpeed;
+                moveVelocity.y = 0;
                 if(usesRigidbody){
                     rigidbody.velocity += upVector;
                 }
@@ -125,17 +119,21 @@ public class PlayerControls : MonoBehaviour
                 rigidbody.velocity += gravity * Time.deltaTime;
                 print(rigidbody.velocity);
             } else {
-                upVector += gravity * gravityScale * Time.deltaTime;
+                upVector = gravity * gravityScale * Time.deltaTime;
             }
         }
-        
+
+        xzMoveVel.y = moveVelocity.y + upVector.y;
+        moveVelocity = xzMoveVel;
+
         if(usesRigidbody){
-            // rigidbody.velocity = moveVelocity;
+            rigidbody.velocity += movementVector;
+            rigidbody.rotation = Quaternion.Euler(0f, rigidbody.rotation.eulerAngles.y, 0f);
+            rigidbody.angularVelocity = Vector3.zero;
         } else {
-            characterController.Move(upVector * Time.deltaTime);
+            characterController.Move(moveVelocity);
         }
     }
-
     void ResetPosition(){
         if(Input.GetKeyDown(KeyCode.R)){
             if(usesRigidbody){
@@ -165,5 +163,23 @@ public class PlayerControls : MonoBehaviour
         }
     }
 
+
+    private Vector3 AdjustVelocityToSlope(Vector3 velocity)
+    {
+        var ray = new Ray(transform.position, Vector3.down);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 0.2f))
+        {
+            var slopeRotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
+            var adjustedVelocity = slopeRotation * velocity;
+
+            if (adjustedVelocity.y < 0)
+            {
+                return adjustedVelocity;
+            }
+        }
+
+        return velocity;
+    }
 
 }
