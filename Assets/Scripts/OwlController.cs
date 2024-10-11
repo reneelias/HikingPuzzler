@@ -15,11 +15,18 @@ public class OwlController : MonoBehaviour
     }
 
     public OwlState owlState { get; private set; } = OwlState.Idle;
+    [Header("TakeOff")]
+    private Vector3 takeOffTargetPosition;
+    private Vector3? takeOffTargetRotation;
+    [SerializeField] private float takeOffSpeed = 3f;
+    private Vector3 velocity = Vector3.zero;
+    private Vector3 rotationVelocity = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
+        InitiateTakeOff(new Vector3(0f, 30f, 0f), Vector3.zero);
     }
 
     // Update is called once per frame
@@ -29,6 +36,7 @@ public class OwlController : MonoBehaviour
             case OwlState.Idle:
                 break;
             case OwlState.TakingOff:
+                TakingOff();
                 break;
             case OwlState.Flying:
                 break;
@@ -42,6 +50,27 @@ public class OwlController : MonoBehaviour
         animator.SetTrigger(animState.ToString());
     }
 
+    public void InitiateTakeOff(Vector3 takeOffOffset, Vector3? takeOffTargetRotation = null, OwlAnimState takeOffType = OwlAnimState.TakeOffGrounded){
+        takeOffTargetPosition = transform.position + takeOffOffset;
+        this.takeOffTargetRotation = takeOffTargetRotation; 
+        animState = takeOffType;
+        owlState = OwlState.TakingOff;
+    }
+
+    private void TakingOff(){
+        transform.position = Vector3.SmoothDamp(transform.position, takeOffTargetPosition, ref velocity, takeOffSpeed);
+        if(takeOffTargetRotation != null){
+            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation.Value, ref rotationVelocity, takeOffSpeed);
+        }
+        if(Vector3.Distance(transform.position, takeOffTargetPosition) < .05f){
+            InitiateFlying();
+        }
+    }
+
+    public void InitiateFlying(){
+        animState = OwlAnimState.Fly;
+        owlState = OwlState.Flying;
+    }
 }
 
 public enum OwlAnimState{
