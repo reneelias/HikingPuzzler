@@ -16,9 +16,14 @@ public class OwlController : MonoBehaviour
 
     public OwlState owlState { get; private set; } = OwlState.Idle;
     [Header("TakeOff")]
+    [Tooltip("Lower values means the destination position will be reached more quickly.")]
+    [SerializeField] private float takeOffSpeed = 3f;
+    [Tooltip("The max amount of degrees allowed to turn on the Z axis.")]
+    [SerializeField] private float maxRotationZ = 80f;
+    [Tooltip("The highest y velocity magnitude considered when being used to lerp z rotation.")]
+    [SerializeField] private float yVelocityTurnThreshold = 60f;
     private Vector3 takeOffTargetPosition;
     private Vector3? takeOffTargetRotation;
-    [SerializeField] private float takeOffSpeed = 3f;
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotationVelocity = Vector3.zero;
     // Start is called before the first frame update
@@ -26,7 +31,7 @@ public class OwlController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
-        InitiateTakeOff(new Vector3(0f, 30f, 0f), Vector3.zero);
+        InitiateTakeOff(new Vector3(0f, 30f, 0f), new Vector3(0f, 360f, 0f));
     }
 
     // Update is called once per frame
@@ -61,6 +66,13 @@ public class OwlController : MonoBehaviour
         transform.position = Vector3.SmoothDamp(transform.position, takeOffTargetPosition, ref velocity, takeOffSpeed);
         if(takeOffTargetRotation != null){
             transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation.Value, ref rotationVelocity, takeOffSpeed);
+            
+            if(rotationVelocity.y != 0f){
+                float zRotation = Mathf.Lerp(0f, maxRotationZ, Mathf.Clamp(Mathf.Abs(rotationVelocity.y / yVelocityTurnThreshold), 0f, 1f));
+                zRotation *= rotationVelocity.y < 0 ? 1 : -1;
+                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, zRotation);
+            }
+            
         }
         if(Vector3.Distance(transform.position, takeOffTargetPosition) < .05f){
             InitiateFlying();
