@@ -17,7 +17,7 @@ public class OwlController : MonoBehaviour
     public OwlState owlState { get; private set; } = OwlState.Idle;
     [Header("TakeOff")]
     [SerializeField] private Vector3 takeOffOffset = new Vector3(0f, 30f, 0f);
-    [SerializeField] private Vector3? takeOffTargetRotation = new Vector3(0f, 360f, 0f);
+    [SerializeField] private Vector3 takeOffTargetRotation = new Vector3(0f, 360f, 0f);
     [Tooltip("Lower values means the destination position will be reached more quickly.")]
     [SerializeField] private float takeOffSpeed = 3f;
     [Tooltip("The max amount of degrees allowed to turn on the Z axis.")]
@@ -33,6 +33,7 @@ public class OwlController : MonoBehaviour
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
         InitiateTakeOff(takeOffOffset, takeOffTargetRotation);
+        // InitiateTakeOff(takeOffOffset);
     }
 
     // Update is called once per frame
@@ -56,9 +57,16 @@ public class OwlController : MonoBehaviour
         animator.SetTrigger(animState.ToString());
     }
 
-    public void InitiateTakeOff(Vector3 takeOffOffset, Vector3? takeOffTargetRotation = null, OwlAnimState takeOffType = OwlAnimState.TakeOffGrounded){
+    public void InitiateTakeOff(Vector3 takeOffOffset, Vector3 takeOffTargetRotation, OwlAnimState takeOffType = OwlAnimState.TakeOffGrounded){
         takeOffTargetPosition = transform.position + takeOffOffset;
         this.takeOffTargetRotation = takeOffTargetRotation; 
+        animState = takeOffType;
+        owlState = OwlState.TakingOff;
+    }
+
+    public void InitiateTakeOff(Vector3 takeOffOffset, OwlAnimState takeOffType = OwlAnimState.TakeOffGrounded){
+        takeOffTargetPosition = transform.position + takeOffOffset;
+        takeOffTargetRotation = transform.eulerAngles; 
         animState = takeOffType;
         owlState = OwlState.TakingOff;
     }
@@ -66,16 +74,15 @@ public class OwlController : MonoBehaviour
     private void TakingOff(){
         transform.position = Vector3.SmoothDamp(transform.position, takeOffTargetPosition, ref velocity, takeOffSpeed);
         animator.speed = Mathf.Max(velocity.magnitude / 8f, .5f);
-        if(takeOffTargetRotation != null){
-            transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation.Value, ref rotationVelocity, takeOffSpeed);
-            
-            if(rotationVelocity.y != 0f){
-                float zRotation = Mathf.Lerp(0f, maxRotationZ, Mathf.Clamp(Mathf.Abs(rotationVelocity.y / yVelocityTurnThreshold), 0f, 1f));
-                zRotation *= rotationVelocity.y < 0 ? 1 : -1;
-                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, zRotation);
-            }
-            
+
+        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation, ref rotationVelocity, takeOffSpeed);
+        print("rotationVelocity: " + rotationVelocity);
+        if(rotationVelocity.y != 0f){
+            float zRotation = Mathf.Lerp(0f, maxRotationZ, Mathf.Clamp(Mathf.Abs(rotationVelocity.y / yVelocityTurnThreshold), 0f, 1f));
+            zRotation *= rotationVelocity.y < 0 ? 1 : -1;
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, zRotation);
         }
+
         if(Vector3.Distance(transform.position, takeOffTargetPosition) < .05f){
             InitiateFlying();
         }
