@@ -16,6 +16,8 @@ public class OwlController : MonoBehaviour
 
     public OwlState owlState { get; private set; } = OwlState.Idle;
     [Header("TakeOff")]
+    [SerializeField] private Vector3 takeOffOffset = new Vector3(0f, 30f, 0f);
+    [SerializeField] private Vector3? takeOffTargetRotation = new Vector3(0f, 360f, 0f);
     [Tooltip("Lower values means the destination position will be reached more quickly.")]
     [SerializeField] private float takeOffSpeed = 3f;
     [Tooltip("The max amount of degrees allowed to turn on the Z axis.")]
@@ -23,7 +25,6 @@ public class OwlController : MonoBehaviour
     [Tooltip("The highest y velocity magnitude considered when being used to lerp z rotation.")]
     [SerializeField] private float yVelocityTurnThreshold = 60f;
     private Vector3 takeOffTargetPosition;
-    private Vector3? takeOffTargetRotation;
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotationVelocity = Vector3.zero;
     // Start is called before the first frame update
@@ -31,7 +32,7 @@ public class OwlController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
-        InitiateTakeOff(new Vector3(0f, 30f, 0f), new Vector3(0f, 360f, 0f));
+        InitiateTakeOff(takeOffOffset, takeOffTargetRotation);
     }
 
     // Update is called once per frame
@@ -64,6 +65,7 @@ public class OwlController : MonoBehaviour
 
     private void TakingOff(){
         transform.position = Vector3.SmoothDamp(transform.position, takeOffTargetPosition, ref velocity, takeOffSpeed);
+        animator.speed = Mathf.Max(velocity.magnitude / 8f, .5f);
         if(takeOffTargetRotation != null){
             transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation.Value, ref rotationVelocity, takeOffSpeed);
             

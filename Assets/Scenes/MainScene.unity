@@ -3139,7 +3139,12 @@ PrefabInstance:
     - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
       propertyPath: takeOffSpeed
-      value: 1.5
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
+        type: 3}
+      propertyPath: takeOffOffset.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6085714004380108225, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
@@ -3149,7 +3154,7 @@ PrefabInstance:
     - target: {fileID: 6085714004380108225, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6085714004380342273, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
