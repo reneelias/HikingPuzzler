@@ -28,10 +28,11 @@ public class OwlController : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotationVelocity = Vector3.zero;
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
+        yield return new WaitForSecondsRealtime(2f);
         InitiateTakeOff(takeOffOffset, takeOffTargetRotation);
         // InitiateTakeOff(takeOffOffset);
     }
@@ -75,7 +76,7 @@ public class OwlController : MonoBehaviour
         transform.position = Vector3.SmoothDamp(transform.position, takeOffTargetPosition, ref velocity, takeOffSpeed);
         animator.speed = Mathf.Max(velocity.magnitude / 8f, .5f);
 
-        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation, ref rotationVelocity, takeOffSpeed);
+        transform.localEulerAngles = Vector3.SmoothDamp(transform.localEulerAngles, takeOffTargetRotation, ref rotationVelocity, takeOffSpeed, 60f, Time.smoothDeltaTime);
         print("rotationVelocity: " + rotationVelocity);
         if(rotationVelocity.y != 0f){
             float zRotation = Mathf.Lerp(0f, maxRotationZ, Mathf.Clamp(Mathf.Abs(rotationVelocity.y / yVelocityTurnThreshold), 0f, 1f));
@@ -83,7 +84,9 @@ public class OwlController : MonoBehaviour
             transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, zRotation);
         }
 
-        if(Vector3.Distance(transform.position, takeOffTargetPosition) < .05f){
+        if(Vector3.Distance(transform.position, takeOffTargetPosition) < .2f){
+            transform.eulerAngles = takeOffTargetRotation;
+            transform.position = takeOffTargetPosition;
             InitiateFlying();
         }
     }
