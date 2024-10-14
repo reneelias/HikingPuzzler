@@ -34,9 +34,10 @@ public class OwlController : MonoBehaviour
     // Start is called before the first frame update
     IEnumerator Start()
     {
+        yield return new WaitForSecondsRealtime(1f);
         animator = GetComponent<Animator>();
         animator.SetTrigger(animState.ToString());
-        yield return new WaitForSecondsRealtime(2f);
+        yield return new WaitForSecondsRealtime(1f);
         InitiateTakeOff(takeOffOffset, takeOffTargetRotation);
         // InitiateTakeOff(takeOffOffset);
     }

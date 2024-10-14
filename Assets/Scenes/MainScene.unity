@@ -3143,6 +3143,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
+      propertyPath: takeOffDuration
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
+        type: 3}
       propertyPath: takeOffOffset.z
       value: 20
       objectReference: {fileID: 0}
