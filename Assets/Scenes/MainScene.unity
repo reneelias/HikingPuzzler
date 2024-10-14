@@ -3139,7 +3139,7 @@ PrefabInstance:
     - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
       propertyPath: takeOffSpeed
-      value: 1.5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
@@ -3148,8 +3148,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
+      propertyPath: rotationSpeedScaler
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 564882818201960294, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
+        type: 3}
       propertyPath: takeOffTargetRotation.y
-      value: 0
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 6085714004380108225, guid: 02d3279f912c3b0449cb75dc7c4c4e0a,
         type: 3}
