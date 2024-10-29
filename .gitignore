@@ -15,10 +15,12 @@
 /[Aa]ssets/Animals*Full*Pack/**/FBX*Files
 
 # Nature Assets
-/[Aa]ssets/NatureManufacture*Assets
-# /[Aa]ssets/NatureManufacture*Assets/**/Textures
-# /[Aa]ssets/NatureManufacture*Assets/**/Models
-# /[Aa]ssets/NatureManufacture*Assets/**/DemoScenes
+/[Aa]ssets/NatureManufacture*Assets/**/Textures
+/[Aa]ssets/NatureManufacture*Assets/**/Models
+/[Aa]ssets/NatureManufacture*Assets/**/Demo*Scenes
+/[Aa]ssets/NatureManufacture*Assets/Meadow*Environment*Dynamic*Nature/Ground/*
+!/[Aa]ssets/NatureManufacture*Assets/Meadow*Environment*Dynamic*Nature/Ground/Materials
+/[Aa]ssets/NatureManufacture*Assets/**/Terrain*heightmaps*and*Stamps
 
 # Terrain Assets
 /[Aa]ssets/TerrainSampleAssets/
