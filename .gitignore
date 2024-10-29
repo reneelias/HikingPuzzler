@@ -16,15 +16,18 @@
 
 # Nature Assets
 /[Aa]ssets/NatureManufacture*Assets
+# /[Aa]ssets/NatureManufacture*Assets/**/Textures
+# /[Aa]ssets/NatureManufacture*Assets/**/Models
+# /[Aa]ssets/NatureManufacture*Assets/**/DemoScenes
 
 # Terrain Assets
-/[Aa]ssets/TerrainSampleAssets
+/[Aa]ssets/TerrainSampleAssets/
 
 # URP Terrain Demo Scene
-/[Aa]ssets/TerrainDemoScene_URP
-
-# URP Terrain Demo Scene
-/[Aa]ssets/TerrainDemoScene_URP
+/[Aa]ssets/TerrainDemoScene_URP/*
+!/[Aa]ssets/TerrainDemoScene_URP/Terrain/
+/[Aa]ssets/TerrainDemoScene_URP/Terrain/*
+!/[Aa]ssets/TerrainDemoScene_URP/Terrain/Layers/
 
 # Real Stars Skybox
 /[Aa]ssets/Real*Stars*Skybox/
